@@ -1,20 +1,22 @@
-import React, {FC, MouseEvent} from 'react';
+/** @jsx jsx */
+import {jsx} from "@emotion/core";
+import React from 'react';
 
-import './Button.module.css';
+import * as st from './ButtonStyles';
 
 export type ButtonProps = {
-    onClick?: (event: MouseEvent<HTMLButtonElement>) => void
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 /**
  *  Button Functional Component.
  */
-const Button: FC<ButtonProps> = ({
+const Button: React.FC<ButtonProps> = ({
                                      children,
                                      onClick,
                                  }) => {
     return (
-        <button className="Button" onClick={onClick}>
+        <button css={[st.baseStyle]} onClick={onClick}>
             {children}
         </button>
     );

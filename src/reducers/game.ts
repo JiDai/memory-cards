@@ -5,6 +5,26 @@ export const flipCard = createActionCreator('FLIP_CARD',
     resolve => (index: number) => resolve(index)
 );
 
+
+export enum Symbol {
+    'work' = 'work',
+    'face' = 'face',
+    'build' = 'build',
+    'explore' = 'explore',
+    'grade' = 'grade',
+    'home' = 'home',
+    'motorcycle' = 'motorcycle',
+    'pets' = 'pets',
+    'rowing' = 'rowing',
+    'hourglass_empty' = 'hourglass_empty',
+    'favorite' = 'favorite',
+    'bug_report' = 'bug_report',
+    'flight' = 'flight',
+    'room_service' = 'room_service',
+    'cake' = 'cake',
+    'sports_basketball' = 'sports_basketball',
+}
+
 export enum CardStatus {
     faceDown,
     selected,
@@ -12,7 +32,8 @@ export enum CardStatus {
 }
 
 export type Card = {
-    symbol: string
+    position: number
+    symbol: Symbol
     status: CardStatus
 }
 
@@ -20,48 +41,73 @@ export type GameState = {
     boardSize: number
     moves: number
     board: Card[]
+    startedAt?: Date
 }
 
-const defaultState: GameState = {
+export const defaultState: GameState = {
     boardSize: 4,
     moves: 0,
     board: [],
 };
 
-const symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-
 const gameReducer = createReducer(defaultState, handleAction => [
     handleAction(newGame, state => {
-        let boardSymbols = symbols.slice(0, state.boardSize * 2);
-        boardSymbols = boardSymbols.concat(boardSymbols);
+        let boardSymbols = [...Object.keys(Symbol)];
         boardSymbols.sort(() => Math.random() - 0.5);
+        boardSymbols = boardSymbols.slice(0, state.boardSize * 2);
+        boardSymbols = boardSymbols.concat(boardSymbols);
 
-        const board = boardSymbols
-            .map((symbol: string, i: number) => {
+        const board: Card[] = boardSymbols
+            .map((symbol: string, i: number): Card => {
                 return {
-                    symbol,
-                    status: CardStatus.faceDown
+                    symbol: symbol as Symbol,
+                    status: CardStatus.faceDown,
+                    position: i,
                 };
             });
 
         return {
             ...defaultState,
+            startedAt: new Date(),
             board,
         };
     }),
 
     handleAction(flipCard, (state, {payload}) => {
-        const selectedCardCount = state.board.filter(c => c.status === CardStatus.selected).length;
-        if (selectedCardCount >= 2) {
+        const selectedCard = state.board[payload];
+        if (selectedCard.status === CardStatus.valid || selectedCard.status === CardStatus.selected) {
             return state;
         }
 
-        const newBoard = [...state.board];
-        newBoard[payload].status = CardStatus.selected;
+        const newBoard: Card[] = [...state.board];
+        let newMoves = state.moves;
+
+        let faceUpCards: Card[] = state.board.filter(c => c.status === CardStatus.selected);
+        if (faceUpCards.length === 1) {
+            const faceUpCard = faceUpCards[0];
+            if (faceUpCard.symbol === selectedCard.symbol) {
+                newBoard[faceUpCard.position].status = CardStatus.valid;
+                newBoard[selectedCard.position].status = CardStatus.valid;
+            }
+        }
+
+        if (faceUpCards.length === 2 && faceUpCards[0].status !== CardStatus.valid) {
+            newBoard[faceUpCards[0].position].status = CardStatus.faceDown;
+            newBoard[faceUpCards[1].position].status = CardStatus.faceDown;
+        }
+
+        if (newBoard[selectedCard.position].status !== CardStatus.valid) {
+            newBoard[selectedCard.position].status = CardStatus.selected;
+        }
+
+        if (faceUpCards.length === 2) {
+            newMoves += 1;
+        }
 
         return {
             ...state,
             board: newBoard,
+            moves: newMoves,
         };
     }),
 ]);

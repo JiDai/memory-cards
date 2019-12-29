@@ -2,11 +2,19 @@
     text-align: center;
 }
 
-.App-header {
+.AppHeader {
+    align-items: center;
     background-color: #282c34;
+    color: white;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    color: white;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+}
+
+.AppScore {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
 }
