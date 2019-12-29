@@ -15,7 +15,7 @@ const App: React.FC = () => {
             <header className="App-header">
                 <h1>Memorii</h1>
                 <p>Memory card game</p>
-                <Button onClick={() => dispatch({type: newGame.type})}>New game</Button>
+                <Button onClick={() => dispatch(newGame())}>New game</Button>
             </header>
 
             <Board/>

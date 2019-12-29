@@ -1,0 +1,11 @@
+.CardTile {
+    -webkit-appearance: none;
+    border: 0;
+    width: 100px;
+    height: 100px;
+    background-color: aquamarine;
+}
+
+.CardTile--flipped {
+    background-color: aqua;
+}
